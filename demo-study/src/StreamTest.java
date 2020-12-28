@@ -16,8 +16,9 @@ public class StreamTest {
     @Test
     public void testStreamWords() {
         String str = "We Attack123At2@Dawn";
-        String result = streamWords(str);
-        assertEquals("atwcdekn", result);
+        String str2 = "eeee bBbb cCcc aaaA Dddd";
+        assertEquals("atwcdekn", streamWordsNew(str));
+        assertEquals("abcde", streamWordsNew(str2));
     }
 
     /**
@@ -26,7 +27,19 @@ public class StreamTest {
      * @param words 要统计的单词
      * @return 组合结果
      */
-    public static String streamWords(String words) {
+    public static String streamWordsNew(String words) {
+        return words.chars()
+            .mapToObj(c -> (char) c)
+            .map(Character::toLowerCase)
+            .filter(c -> c >= 'a' && c <= 'z')
+            .sorted(Character::compareTo)
+            .collect(Collectors.groupingBy(c -> c, Collectors.counting())).entrySet().stream()
+            .sorted((v1, v2) -> v2.getValue().compareTo(v1.getValue()))
+            .flatMap(k -> Stream.of(k.getKey().toString()))
+            .collect(Collectors.joining());
+    }
+
+    public static String streamWordsOld(String words) {
         return Stream.of(words.split(""))
             .filter(i -> i.matches("[a-zA-Z]"))
             .map(String::toLowerCase)
