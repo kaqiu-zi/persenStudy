@@ -66,6 +66,13 @@
             <scope>provided</scope>
         </dependency>
 
+        <!--    常用工具    -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.11</version>
+        </dependency>
+
         <!-- 随机注入Bean工具 -->
         <dependency>
             <groupId>io.gitee.ForteScarlet</groupId>
