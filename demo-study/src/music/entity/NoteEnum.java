@@ -35,20 +35,20 @@ public enum NoteEnum {
 
     private final int value;
     private final String chars;
-//    private static final Map<Integer, NoteEnum> VALUE_MAP = Arrays.stream(NoteEnum.values()).collect(Collectors.toMap(NoteEnum::getValue, Function.identity()));
     private static final Map<String, NoteEnum> CHAR_MAP = Arrays.stream(NoteEnum.values()).collect(Collectors.toMap(NoteEnum::getChars, Function.identity()));
     private static final int NUM_ZERO = 0;
     private static final int NUM_SIX = 6;
     private static final int NUM_SEVEN = 7;
+    private static final int NUM_STOP = 8;
 
     public static NoteEnum from(String c) {
-        return CHAR_MAP.get(c);
+        return CHAR_MAP.get(String.valueOf(c));
     }
 
     public static NoteEnum from(int num) {
-        if (num < NUM_ZERO || num > NUM_SEVEN) {
+        if (num < NUM_ZERO || num > NUM_STOP) {
             return null;
-        } else if (NUM_ZERO == num) {
+        } else if (NUM_ZERO == num || NUM_STOP == num) {
             return ZERO;
         }else if (num < NUM_SIX) {
             return CHAR_MAP.get(String.valueOf((char)('B' + num)));

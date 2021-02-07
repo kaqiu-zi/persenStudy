@@ -19,12 +19,12 @@ public class MusicScoreTest {
 
     @Test
     public void test() {
-        String s = "756~451~~123~~~$";
+        String s = "1~2~3~4=5~671'-*7'6''5'-*5,=*4,~*3,2,,1,$";
 
         MusicScore musicScore = MusicScore.from(s);
         Assertions.assertNotNull(musicScore.getSyllables());
         LinkedList<Syllable> list = musicScore.getSyllables();
-        Assertions.assertEquals(9, list.size());
+        Assertions.assertEquals(16, list.size());
         System.out.println(s);
     }
 

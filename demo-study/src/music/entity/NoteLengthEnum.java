@@ -14,69 +14,57 @@ import java.util.stream.Collectors;
  * @since 1.0.0 TODO:需要跟随版本号
  */
 public enum NoteLengthEnum {
-    /** zero */
-    ZERO(0),
-    /** 32分音符 */
-    THIRTY_SECOND(1),
+    /** 同时音 */
+    ZERO(0, ""),
     /** 16分音符 */
-    SIXTEEN(2),
-    /** 16分·音符 */
-    SIXTEEN_POINT(3),
+    SIXTEEN(1, "+"),
     /** 8分音符 */
-    QUAVER(4),
+    QUAVER(2, "~"),
     /** 8分·音符 */
-    QUAVER_POINT(4),
+    QUAVER_POINT(3, "~*"),
     /** 4分音符 */
-    CROTCHETS(8),
+    CROTCHETS(4, "-"),
     /** 4分·音符 */
-    CROTCHETS_POINT(12),
+    CROTCHETS_POINT(6, "-*"),
     /** 2分音符 */
-    MINIMS(16),
+    MINIMS(8, "="),
+    MINIMS_DOUBLE(8, "--"),
     /** 2分·音符 */
-    MINIMS_POINT(24),
+    MINIMS_POINT(12, "=*"),
+    MINIMS_DOUBLE_POINT(12, "--*"),
     /** 全音符 */
-    WHOLE(32),
-    /** 全·音符 */
-    WHOLE_PONT(48);
+    WHOLE(16, "&"),
+    WHOLE_DOUBLE(16, "=="),
+    WHOLE_FOUR(16, "----");
 
     private final int value;
-    private static final Map<Integer, NoteLengthEnum> VALUE_MAP = Arrays.stream(NoteLengthEnum.values()).collect(Collectors.toMap(NoteLengthEnum::getValue, Function.identity()));
-    private static final HashSet<NoteLengthEnum> POINT_SET = new HashSet<>(Arrays.asList(SIXTEEN_POINT, QUAVER_POINT, CROTCHETS_POINT, MINIMS_POINT, WHOLE_PONT));
+    private final String string;
+    private static final Map<String, NoteLengthEnum> NAME_MAP = Arrays.stream(NoteLengthEnum.values()).collect(Collectors.toMap(NoteLengthEnum::getString, Function.identity()));
+    private static final HashSet<Character> NOTE_LENGTH_SET = new HashSet<>(Arrays.asList('&', '=', '-', '~', '+'));
 
-    public static NoteLengthEnum from(int num) {
-        return VALUE_MAP.get(num);
+    public static boolean isLength(int c) {
+        return NOTE_LENGTH_SET.contains((char) c);
     }
 
-    NoteLengthEnum(int value) {
+    public static NoteLengthEnum from(String s) {
+        return NAME_MAP.get(s);
+    }
+
+    NoteLengthEnum(int value, String string) {
         this.value = value;
+        this.string = string;
     }
 
     public int getValue() {
         return value;
     }
 
-    public static NoteLengthEnum add(NoteLengthEnum one, NoteLengthEnum two) {
-        if (null == one || two == null) {
-            return null;
-        }
-        return VALUE_MAP.get(one.getValue() + two.getValue());
+    public String getString() {
+        return string;
     }
 
     public static NoteLengthEnum point(NoteLengthEnum origin) {
-        if (null == origin) {
-            return null;
-        }
-        if (NoteLengthEnum.isPoint(origin)) {
-            throw new NullPointerException("存在多重加点的情况");
-        }
-        return VALUE_MAP.get(origin.getValue() + origin.getValue() / 2);
+        String s = origin.getString() + "*";
+        return NAME_MAP.get(s);
     }
-
-    public static boolean isPoint(NoteLengthEnum origin) {
-        if (null == origin) {
-            throw new NullPointerException();
-        }
-        return POINT_SET.contains(origin);
-    }
-
 }

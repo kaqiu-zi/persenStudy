@@ -1,8 +1,11 @@
 package music.entity;
 
 
+import music.BusinessException;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.LinkedList;
 
 /**
@@ -15,90 +18,79 @@ import java.util.LinkedList;
 public class MusicScore {
     /** 存储音符的list */
     private final LinkedList<Syllable> syllables = new LinkedList<>();
-    /** 基准音，默认C4，C5 */
+    /** 基准音，默认 */
     private String baseNote;
     /** 音符数 */
     private int size;
     /** 曲速 */
     private int speed;
-    private static final int BASE_PITCH = 4;
-    private static final char END = '$';
-    private static final char HIGH_PITCH = '\'';
-    private static final char LOW_PITCH = ',';
-    private static final char LENGTH_PITCH = '~';
-    private static final char MINUS_LENGTH_PITCH = '_';
-    private static final char ZERO_NOTE = '0';
-    private static final char MAX_NOTE = '8';
+
+    private static final HashSet<Character> availableSet = new HashSet<>(Arrays.asList(
+        '0', '1', '2', '3', '4', '5', '6', '7', '\'', ',', '&', '-', '=', '~', '#', '^', '*', '$'));
     private MusicScore() {}
 
     /**
-     * 形如123~~4~5~6~~~~7~~~才能转换
-     * 简谱
-     * <p>必须以数字打头，以~作为间隔，以$符号结尾</p>
+     * 生成光遇谱，需要设定曲速
+     *
+     * @return
+     */
+    public String toLight() {
+        return null;
+    }
+
+    /**
+     * <pre>
+     *     有效字符：
+     *     0 ~ 7 ： 简谱音符
+     *     '' ,, ： 简谱音高、音低符
+     *     &-~=#^： 全音符、二分音符...三十二分音符，能使用一个符号，就不要使用两个符号，减少重复。
+     *     $     ： 终止符，这之后的任何输入都不再影响结果。
+     * </pre>
+     * <p>例子： 5~=5=2'~=2'=3'~=3'=1'~=1'=</p>
+     * <p>没有做太多的参数校验，请保证输入的格式正确，否则输出的结果无法保证</p>
      *
      * @param s 简谱表
      * @return 转换好的乐谱
      * @throws NullPointerException 如果不规范
      */
     public static MusicScore from(String s) {
-        MusicScore musicScore = new MusicScore();
+        // 参数校验
         char[] chars = StringUtils.trimToEmpty(s).toCharArray();
         if (chars.length < 1) {
-            throw new NullPointerException();
+            throw new BusinessException("字符串不能为空");
         }
+
+        MusicScore musicScore = new MusicScore();
         // 索引
         int index = 0;
         // 当前音符
         Syllable syllable = null;
-        // 保险
-        boolean enableHigh = false;
-        boolean enableLow = false;
-
+        // 主循环
         for (char c : chars) {
-            if (ZERO_NOTE < c && MAX_NOTE > c) {
+            if (!availableSet.contains(c)) {
+                throw new BusinessException("含有非法字符");
+            }
+            // 获取简谱的数字
+            if (ZERO_NOTE <= c && MAX_NOTE > c) {
                 if (null != syllable) {
                     musicScore.syllables.add(syllable);
                 }
-                syllable = new Syllable(index, NoteEnum.from(c - ZERO_NOTE), BASE_PITCH, NoteLengthEnum.ZERO);
-//                syllable = Syllable.builder()
-//                    .index(index)
-//                    .note(NoteEnum.from(c - ZERO_NOTE))
-//                    .pitch(BASE_PITCH)
-//                    .build();
-                enableHigh = true;
-                enableLow = true;
-                continue;
+//                syllable = new Syllable(index, NoteEnum.from(c - ONE_NOTE), BASE_PITCH);
             }
-            if (enableHigh && HIGH_PITCH == c) {
-                enableLow = false;
+            if (HIGH_PITCH == c) {
                 syllable.addPitch();
-                continue;
-            } else if (enableLow && LOW_PITCH == c) {
-                enableHigh = false;
+            } else if (LOW_PITCH == c) {
                 syllable.minusPitch();
-                continue;
             }
-            // 延长音的判定
-            if (LENGTH_PITCH == c || MINUS_LENGTH_PITCH == c) {
-                if (null == syllable) {
-                    throw new NullPointerException();
-                }
-                enableHigh = false;
-                enableLow = false;
-                if (LENGTH_PITCH == c) {
-                    syllable.addLength(NoteLengthEnum.QUAVER);
-                    index += 4;
-                } else {
-                    syllable.addLength(NoteLengthEnum.SIXTEEN);
-                    index += 2;
-                }
-                continue;
+            // 音长的判断
+            if (NoteLengthEnum.isLength(c)) {
+                index += syllable.addLength(c);
             }
+            // 终结符
             if (END == c) {
                 musicScore.syllables.add(syllable);
                 break;
             }
-            throw new NullPointerException();
         }
         return musicScore;
     }
