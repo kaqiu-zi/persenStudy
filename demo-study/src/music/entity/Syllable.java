@@ -48,12 +48,14 @@ public class Syllable implements Comparable<Syllable> {
         if (noteOptional.isPresent()) {
             // 五线谱
             syllable.note = noteOptional.get();
-            Character pitch = s.chars()
-                .mapToObj(c -> (char) c)
-                .filter(Constants.STAFF_PITCH_SET::contains)
-                .findFirst()
-                .orElseThrow(() -> new BusinessException(s + "五线谱缺少音高符"));
-            syllable.pitch = pitch - Constants.NUMBER_STOP;
+            if (NoteEnum.ZERO != noteOptional.get()) {
+                Character pitch = s.chars()
+                    .mapToObj(c -> (char) c)
+                    .filter(Constants.STAFF_PITCH_SET::contains)
+                    .findFirst()
+                    .orElseThrow(() -> new BusinessException(s + "五线谱缺少音高符"));
+                syllable.pitch = pitch - Constants.NUMBER_STOP;
+            }
         } else {
             // 简谱
             Character note = s.chars()
@@ -74,7 +76,8 @@ public class Syllable implements Comparable<Syllable> {
         if (NoteEnum.ZERO == this.note) {
             return this.note.getValue();
         }
-        return pitch * 12 + note.getValue() - baseNoteValue;
+        int tmp = pitch * 12 + note.getValue() - baseNoteValue;
+        return tmp;
     }
 
     public int getIndex() {
@@ -99,7 +102,7 @@ public class Syllable implements Comparable<Syllable> {
     @Override
     public String toString() {
         return "index=" + index +
-            ", note=" + note + pitch +
+            ", note=" + note.getChars() + pitch +
             ", noteLength=" + noteLength;
     }
 

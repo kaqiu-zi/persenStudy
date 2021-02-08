@@ -17,7 +17,7 @@ public class Constants {
     /** 文件写入路径名 */
     public static final String FILE_PATH = "D:/sky/test.txt";
     /** 文件输出路径名 */
-    public static final String FILE_PATH_WRITE = "D:/sky/test_out.txt";
+    public static final String FILE_PATH_WRITE = "D:/sky/test_out.js";
     /** JavaScript */
     public static final String JAVA_SCRIPT = "JavaScript";
     /** staff */
@@ -39,7 +39,7 @@ public class Constants {
     /** 调用各按键js文本 */
     public static final String CALL_PRESS_TEXT = "%c%d();";
     /** 调用等待时间js文本 */
-    public static final String CALL_SLEEP_TEXT = "sleep(time%d);";
+    public static final String CALL_SLEEP_TEXT = "sleep(%d);";
     /** 按键总数 */
     public static final int PRESS_SIZE = 15;
     /** 一行的按键个数 */

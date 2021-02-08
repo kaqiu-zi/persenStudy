@@ -3,6 +3,7 @@ package music.service;
 import music.common.BusinessException;
 import music.constant.Constants;
 import music.entity.MusicScore;
+import music.entity.NoteEnum;
 import music.entity.NoteLengthEnum;
 import music.entity.Syllable;
 
@@ -102,6 +103,24 @@ public class MusicScanService {
         return null;
     }
 
+    public void toSky(MusicScore musicScore, String path, String baseNote) {
+        if ( 3 == baseNote.length()) {
+            musicScore.setBaseNote(NoteEnum.from(baseNote.substring(0, 2)));
+            musicScore.setBasePitch(Integer.parseInt(baseNote.substring(2)));
+        } else {
+            musicScore.setBaseNote(NoteEnum.from(baseNote.substring(0, 1)));
+            musicScore.setBasePitch(Integer.parseInt(baseNote.substring(1)));
+        }
+        // TODO(mingJie-Ou): 2021/2/8 给musicScore加上判定
+        this.toSky(musicScore, path);
+    }
+
+    /**
+     * 转为光遇谱子
+     *
+     * @param musicScore 转好的乐谱
+     * @param path 路径名
+     */
     public void toSky(MusicScore musicScore, String path) {
         File file = new File(path);
         final int baseValue = musicScore.getBaseValue();
@@ -116,13 +135,17 @@ public class MusicScanService {
                 out.write(pressString);
                 out.newLine();
             }
+            out.newLine();
             // 遍历写入音符
             int index = 0;
             int rhythm = Constants.BASE_RHYTHM / musicScore.getSpeed();
             for (Syllable syllable : musicScore.getSyllables()) {
-                out.write(String.format(Constants.CALL_SLEEP_TEXT,
-                    rhythm * (syllable.getIndex() - index) / NoteLengthEnum.CROTCHETS.getValue()));
-                out.write(pressMap.get(syllable.computeNoteValue(baseValue)));
+                final int interval = syllable.getIndex() - index;
+                if (0 != interval) {
+                    out.write(String.format(Constants.CALL_SLEEP_TEXT,
+                        rhythm * (interval) / NoteLengthEnum.CROTCHETS.getValue()));
+                }
+                out.write(pressMap.getOrDefault(syllable.computeNoteValue(baseValue), "Error;"));
                 if (0 != index && (index % WHOLE.getValue()) == 0 && (syllable.getIndex() % WHOLE.getValue()) != 0 ) {
                     out.newLine();
                 }
@@ -189,7 +212,7 @@ public class MusicScanService {
     private Map<Integer, String> generateCallPress() {
         return IntStream.range(-1, Constants.PRESS_SIZE)
             .boxed()
-            .collect(Collectors.toMap(i -> PRESS_INDEX[i % 7], i -> {
+            .collect(Collectors.toMap(i -> PRESS_INDEX[i + 1], i -> {
                 if (-1 == i) {
                     return "";
                 }
