@@ -1,10 +1,8 @@
 package music.entity;
 
-import music.BusinessException;
+import music.common.BusinessException;
 import music.constant.Constants;
 
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Optional;
 
 /**
@@ -27,6 +25,10 @@ public class Syllable implements Comparable<Syllable> {
     private Syllable() {
     }
 
+    private Syllable(int index) {
+        this.index = index;
+    }
+
     /**
      * 从单一字符串转为音符，遵循特殊规则。没有参数校验，必须保证参数正确。
      * <pre>
@@ -35,104 +37,108 @@ public class Syllable implements Comparable<Syllable> {
      *     3、可选项，音长符号
      * </pre>
      *
-     * @param s 符合规则的字符串
+     * @param s     符合规则的字符串
+     * @param index 当前序号
      * @return 音符
      */
-    public static Syllable from(String s) {
-        Syllable syllable = new Syllable();
+    public static Syllable from(String s, int index) {
+        Syllable syllable = new Syllable(index);
         // 判断是五线谱还是简谱，存在字母则为五线谱，否则为简谱
         Optional<NoteEnum> noteOptional = generateNoteByChar(s);
         if (noteOptional.isPresent()) {
             // 五线谱
             syllable.note = noteOptional.get();
             Character pitch = s.chars()
-                .filter(c -> Constants.MIN_FIVE_NOTE <= c && c <= Constants.MAX_FIVE_NOTE)
                 .mapToObj(c -> (char) c)
+                .filter(Constants.STAFF_PITCH_SET::contains)
                 .findFirst()
-                .orElseThrow(() -> new BusinessException("五线谱缺少音高符"));
-            syllable.pitch = pitch - Constants.ZERO_NOTE;
+                .orElseThrow(() -> new BusinessException(s + "五线谱缺少音高符"));
+            syllable.pitch = pitch - Constants.NUMBER_STOP;
         } else {
             // 简谱
             Character note = s.chars()
-                .filter(c -> Constants.ZERO_NOTE <= c && c <= Constants.MAX_NOTE)
                 .mapToObj(c -> (char) c)
+                .filter(Constants.NUMBER_SET::contains)
                 .findFirst()
-                .orElseThrow(() -> new BusinessException("简谱中不含有数字"));
-            syllable.note = NoteEnum.from(note - Constants.ZERO_NOTE);
+                .orElseThrow(() -> new BusinessException(s + "简谱中不含有数字"));
+            syllable.note = NoteEnum.from(note - Constants.NUMBER_STOP);
             // 音高
             syllable.pitch = generatePitchByNum(s);
         }
-
+        // 时值
+        syllable.noteLength = generateLength(s).orElseThrow(() -> new BusinessException(s + "音符时值无法判断"));
+        return syllable;
     }
 
-    private static Optional<NoteLengthEnum> generateLength(String s) {
-        StringBuilder sb = new StringBuilder();
-        Optional<Character> length = s.chars()
-            .filter(NoteLengthEnum::isLength)
+    /**
+     * 从单一字符串转为音符，遵循特殊规则。没有参数校验，必须保证参数正确。
+     * <pre>
+     *     1、简谱必须含有一个合法数字
+     *     2、可选项，'' ,,
+     *     3、可选项，音长符号
+     * </pre>
+     *
+     * @param s     符合规则的字符串
+     * @param index 当前序号
+     * @return 音符
+     */
+    public static Syllable fromNum(String s, int index) {
+        Syllable syllable = new Syllable(index);
+        // 简谱
+        Character note = s.chars()
             .mapToObj(c -> (char) c)
-            .findFirst();
-        if (!length.isPresent()) {
-            return Optional.of(NoteLengthEnum.ZERO);
-        }
-        sb.append(length.get());
-        long num = s.chars()
-            .filter(NoteLengthEnum::isLength)
-            .count();
-        for (; num > 1; num--) {
-            sb.append(length.get());
-        }
-        s.chars()
-            .filter(c -> Constants.POINT_PITCH == c)
+            .filter(Constants.NUMBER_SET::contains)
             .findFirst()
-            .ifPresent(c -> sb.append(Constants.POINT_PITCH));
-        return Optional.ofNullable(NoteLengthEnum.from(sb.toString()));
+            .orElseThrow(() -> new BusinessException(s + "简谱中不含有数字"));
+        syllable.note = NoteEnum.from(note - Constants.NUMBER_STOP);
+        // 音高
+        syllable.pitch = generatePitchByNum(s);
+        // 时值
+        syllable.noteLength = generateLength(s).orElseThrow(() -> new BusinessException(s + "音符时值无法判断"));
+        return syllable;
     }
 
-    private static int generatePitchByNum(String s) {
-        Optional<Character> pitch = s.chars()
-            .filter(c -> Constants.HIGH_PITCH == c || Constants.LOW_PITCH == c)
-            .mapToObj(c -> (char) c)
-            .findFirst();
-        if (pitch.isPresent()) {
-            long num = s.chars()
-                .filter(c -> Constants.HIGH_PITCH == c || Constants.LOW_PITCH == c)
-                .count();
-            if (Constants.LOW_PITCH == pitch.get()) {
-                return Constants.BASE_PITCH - (int) num;
-            }
-            return Constants.BASE_PITCH + (int) num;
-        }
-        return Constants.BASE_PITCH;
-    }
 
-    private static Optional<NoteEnum> generateNoteByChar(String s) {
-        StringBuilder sb = new StringBuilder();
-        Optional<Character> note = s.chars()
-            .filter(c -> Constants.A_NOTE <= c && c <= Constants.STOP_NOTE)
+    /**
+     * 从单一字符串转为音符，遵循特殊规则。没有参数校验，必须保证参数正确。
+     * <pre>
+     *     1、五线谱需要含有一个字母和数字
+     *     2、可选项，'' ,,
+     *     3、可选项，音长符号
+     * </pre>
+     *
+     * @param s     符合规则的字符串
+     * @param index 当前序号
+     * @return 音符
+     */
+    public static Syllable fromStaff(String s, int index) {
+        Syllable syllable = new Syllable(index);
+        // 五线谱
+        syllable.note = generateNoteByChar(s).orElseThrow(() -> new BusinessException(s + "五线谱缺少字母"));
+        Character pitch = s.chars()
             .mapToObj(c -> (char) c)
-            .findFirst();
-        if (!note.isPresent()) {
-            return Optional.empty();
-        }
-        sb.append(note.get());
-        if (Constants.STOP_NOTE == note.get()) {
-            return Optional.of(NoteEnum.ZERO);
-        }
-        s.chars()
-            .filter(c -> Constants.HIGH_NOTE == c || Constants.LOW_NOTE == c)
-            .mapToObj(c -> (char) c)
+            .filter(Constants.STAFF_PITCH_SET::contains)
             .findFirst()
-            .ifPresent(sb::append);
-        return Optional.ofNullable(NoteEnum.from(sb.toString()));
+            .orElseThrow(() -> new BusinessException(s + "五线谱缺少音高符"));
+        syllable.pitch = pitch - Constants.NUMBER_STOP;
+        // 时值
+        syllable.noteLength = generateLength(s).orElseThrow(() -> new BusinessException(s + "音符时值无法判断"));
+        return syllable;
     }
 
-
-    public int computeNotValue(int baseNoteValue) {
+    public int computeNoteValue(int baseNoteValue) {
+        if (NoteEnum.ZERO == this.note) {
+            return this.note.getValue();
+        }
         return pitch * 12 + note.getValue() - baseNoteValue;
     }
 
     public int getIndex() {
         return index;
+    }
+
+    public NoteLengthEnum getNoteLength() {
+        return noteLength;
     }
 
     @Override
@@ -152,4 +158,86 @@ public class Syllable implements Comparable<Syllable> {
             ", note=" + note + pitch +
             ", noteLength=" + noteLength;
     }
+
+    /**
+     * 获取 音符的时值
+     *
+     * @param s 字符串
+     * @return 时值
+     */
+    private static Optional<NoteLengthEnum> generateLength(String s) {
+        StringBuilder sb = new StringBuilder();
+        Optional<Character> length = s.chars()
+            .mapToObj(c -> (char) c)
+            .filter(Constants.NOTE_LENGTH_SET::contains)
+            .findFirst();
+        if (!length.isPresent()) {
+            return Optional.of(NoteLengthEnum.ZERO);
+        }
+        sb.append(length.get());
+        long num = s.chars()
+            .mapToObj(c -> (char) c)
+            .filter(Constants.NOTE_LENGTH_SET::contains)
+            .count();
+        for (; num > 1; num--) {
+            sb.append(length.get());
+        }
+        s.chars()
+            .filter(c -> Constants.POINT_PITCH == c)
+            .findFirst()
+            .ifPresent(c -> sb.append(Constants.POINT_PITCH));
+        return Optional.ofNullable(NoteLengthEnum.from(sb.toString()));
+    }
+
+    /**
+     * 通过 简谱的方式生成音符
+     *
+     * @param s 字符串
+     * @return 音符
+     */
+    private static int generatePitchByNum(String s) {
+        Optional<Character> pitch = s.chars()
+            .mapToObj(c -> (char) c)
+            .filter(Constants.NUMBER_PITCH_SET::contains)
+            .findFirst();
+        if (pitch.isPresent()) {
+            long num = s.chars()
+                .mapToObj(c -> (char) c)
+                .filter(Constants.NUMBER_PITCH_SET::contains)
+                .count();
+            if (Constants.LOW_PITCH == pitch.get()) {
+                return Constants.BASE_PITCH - (int) num;
+            }
+            return Constants.BASE_PITCH + (int) num;
+        }
+        return Constants.BASE_PITCH;
+    }
+
+    /**
+     * 通过 五线谱的方式生成音符。
+     *
+     * @param s 字符串
+     * @return 音符
+     */
+    private static Optional<NoteEnum> generateNoteByChar(String s) {
+        StringBuilder sb = new StringBuilder();
+        Optional<Character> note = s.chars()
+            .mapToObj(c -> (char) c)
+            .filter(Constants.STAFF_SET::contains)
+            .findFirst();
+        if (!note.isPresent()) {
+            return Optional.empty();
+        }
+        sb.append(note.get());
+        if (Constants.STAFF_STOP == note.get()) {
+            return Optional.of(NoteEnum.ZERO);
+        }
+        s.chars()
+            .mapToObj(c -> (char) c)
+            .filter(Constants.STAFF_HALF_SET::contains)
+            .findFirst()
+            .ifPresent(sb::append);
+        return Optional.ofNullable(NoteEnum.from(sb.toString()));
+    }
+
 }

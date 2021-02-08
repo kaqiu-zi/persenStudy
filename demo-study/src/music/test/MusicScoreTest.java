@@ -21,7 +21,7 @@ public class MusicScoreTest {
     public void test() {
         String s = "1~2~3~4=5~671'-*7'6''5'-*5,=*4,~*3,2,,1,$";
 
-        MusicScore musicScore = MusicScore.from(s);
+        MusicScore musicScore = MusicScore.fromNum(s);
         Assertions.assertNotNull(musicScore.getSyllables());
         LinkedList<Syllable> list = musicScore.getSyllables();
         Assertions.assertEquals(16, list.size());

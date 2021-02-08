@@ -1,4 +1,4 @@
-package music;
+package music.common;
 
 /**
  * {@link }TODO:需要删减，如果不为测试类则增加描述
