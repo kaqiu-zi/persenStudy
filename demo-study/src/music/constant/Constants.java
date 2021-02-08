@@ -14,8 +14,10 @@ public class Constants {
     private Constants() {
     }
 
-    /** 文件路径名 */
-    public static final String FILE_PATH = "D:/c.txt";
+    /** 文件写入路径名 */
+    public static final String FILE_PATH = "D:/sky/test.txt";
+    /** 文件输出路径名 */
+    public static final String FILE_PATH_WRITE = "D:/sky/test_out.txt";
     /** JavaScript */
     public static final String JAVA_SCRIPT = "JavaScript";
     /** staff */
@@ -29,27 +31,26 @@ public class Constants {
     /** 最大行数 */
     public static final int MAX_ROWS = 99;
     /** 文件头部 */
-    public static final String HEAD_TEXT = "var x=2340;var x1=760;var x2=960.0;var x3=1160.0;var x4=1360.0;var x5=1560;var y=1080;var y1=200;var y2=400.0;var y3=600;";
+    public static final String HEAD_TEXT = "var x=2340;var x0=760;var x1=960.0;var x2=1160.0;var x3=1360.0;var x4=1560;var y=1080;var y0=200;var y1=400.0;var y2=600;";
+    /** 时间js文本 */
+    public static final String WAIT_TIME_TEXT = "var time%d = %d;";
     /** 各按键js文本 */
-    public static final String PRESS_ZERO = "";
-    public static final String PRESS_ONE = "function c4() press(x1, y1, 1);";
-    public static final String PRESS_TWO = "function d4() press(x2, y1, 1);";
-    public static final String PRESS_THREE = "function e4() press(x3, y1, 1);";
-    public static final String PRESS_FOUR = "function f4() press(x4, y1, 1);";
-    public static final String PRESS_FIVE = "function g4() press(x5, y1, 1);";
-    public static final String PRESS_SIX = "function a4() press(x1, y2, 1);";
-    public static final String PRESS_SEVEN = "function b4() press(x2, y2, 1);";
-    public static final String PRESS_EIGHT = "function c5() press(x3, y2, 1);";
-    public static final String PRESS_NINE = "function d5() press(x4, y2, 1);";
-    public static final String PRESS_TEN = "function e5() press(x5, y2, 1);";
-    public static final String PRESS_ELEVEN = "function f5() press(x1, y3, 1);";
-    public static final String PRESS_TWELVE = "function g5() press(x2, y3, 1);";
-    public static final String PRESS_THIRTEEN = "function a5() press(x3, y3, 1);";
-    public static final String PRESS_FOURTEEN = "function b5() press(x4, y3, 1);";
-    public static final String PRESS_FIFTEEN = "function c6() press(x5, y3, 1);";
+    public static final String PRESS_TEXT = "function %c%d() press(x%d, y%d, 1);";
+    /** 调用各按键js文本 */
+    public static final String CALL_PRESS_TEXT = "%c%d();";
+    /** 调用等待时间js文本 */
+    public static final String CALL_SLEEP_TEXT = "sleep(time%d);";
+    /** 按键总数 */
+    public static final int PRESS_SIZE = 15;
+    /** 一行的按键个数 */
+    public static final int pressXNum = 5;
+    /** 可用音阶数，只能使用7 或 12 */
+    public static final char[] PRESS_CHARS = {'c', 'd', 'e', 'f', 'g', 'a', 'b'};
 
     /** 中央C位置 */
     public static final int BASE_PITCH = 4;
+    /** 节拍 */
+    public static final int BASE_RHYTHM = 60000;
     /** 简谱 休止符 */
     public static final char NUMBER_STOP = '0';
     /** 五线谱 休止符 */

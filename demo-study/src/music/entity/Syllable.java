@@ -6,11 +6,11 @@ import music.constant.Constants;
 import java.util.Optional;
 
 /**
- * {@link }TODO:需要删减，如果不为测试类则增加描述
+ * 音符类
  *
  * @author mingJie-Ou
  * @version 1.0 2021/2/2
- * @since 1.0.0 TODO:需要跟随版本号
+ * @since 1.0.0
  */
 public class Syllable implements Comparable<Syllable> {
     /** 序号 */
@@ -65,62 +65,6 @@ public class Syllable implements Comparable<Syllable> {
             // 音高
             syllable.pitch = generatePitchByNum(s);
         }
-        // 时值
-        syllable.noteLength = generateLength(s).orElseThrow(() -> new BusinessException(s + "音符时值无法判断"));
-        return syllable;
-    }
-
-    /**
-     * 从单一字符串转为音符，遵循特殊规则。没有参数校验，必须保证参数正确。
-     * <pre>
-     *     1、简谱必须含有一个合法数字
-     *     2、可选项，'' ,,
-     *     3、可选项，音长符号
-     * </pre>
-     *
-     * @param s     符合规则的字符串
-     * @param index 当前序号
-     * @return 音符
-     */
-    public static Syllable fromNum(String s, int index) {
-        Syllable syllable = new Syllable(index);
-        // 简谱
-        Character note = s.chars()
-            .mapToObj(c -> (char) c)
-            .filter(Constants.NUMBER_SET::contains)
-            .findFirst()
-            .orElseThrow(() -> new BusinessException(s + "简谱中不含有数字"));
-        syllable.note = NoteEnum.from(note - Constants.NUMBER_STOP);
-        // 音高
-        syllable.pitch = generatePitchByNum(s);
-        // 时值
-        syllable.noteLength = generateLength(s).orElseThrow(() -> new BusinessException(s + "音符时值无法判断"));
-        return syllable;
-    }
-
-
-    /**
-     * 从单一字符串转为音符，遵循特殊规则。没有参数校验，必须保证参数正确。
-     * <pre>
-     *     1、五线谱需要含有一个字母和数字
-     *     2、可选项，'' ,,
-     *     3、可选项，音长符号
-     * </pre>
-     *
-     * @param s     符合规则的字符串
-     * @param index 当前序号
-     * @return 音符
-     */
-    public static Syllable fromStaff(String s, int index) {
-        Syllable syllable = new Syllable(index);
-        // 五线谱
-        syllable.note = generateNoteByChar(s).orElseThrow(() -> new BusinessException(s + "五线谱缺少字母"));
-        Character pitch = s.chars()
-            .mapToObj(c -> (char) c)
-            .filter(Constants.STAFF_PITCH_SET::contains)
-            .findFirst()
-            .orElseThrow(() -> new BusinessException(s + "五线谱缺少音高符"));
-        syllable.pitch = pitch - Constants.NUMBER_STOP;
         // 时值
         syllable.noteLength = generateLength(s).orElseThrow(() -> new BusinessException(s + "音符时值无法判断"));
         return syllable;
