@@ -89,7 +89,12 @@ public class MusicScore {
                 if (predicate.test(chars[i])) {
                     for (int j = i + 1; j < chars.length; j++) {
                         if (j == chars.length - 1 || predicate.test(chars[j])) {
-                            Syllable syllable = Syllable.from(String.valueOf(chars, i, j - i), index);
+                            Syllable syllable;
+                            if (j == chars.length -1){
+                                syllable = Syllable.from(String.valueOf(chars, i, j - i + 1), index);
+                            } else {
+                                syllable = Syllable.from(String.valueOf(chars, i, j - i), index);
+                            }
                             musicScore.syllables.add(syllable);
                             index += syllable.getNoteLength().getValue();
                             i = j - 1;
