@@ -133,6 +133,10 @@ public class Syllable implements Comparable<Syllable> {
             .filter(c -> Constants.POINT_PITCH == c)
             .findFirst()
             .ifPresent(c -> sb.append(Constants.POINT_PITCH));
+        s.chars()
+            .filter(c -> Constants.SPLIT_PITCH == c)
+            .findFirst()
+            .ifPresent(c -> sb.append(Constants.SPLIT_PITCH));
         return Optional.ofNullable(NoteLengthEnum.from(sb.toString()));
     }
 

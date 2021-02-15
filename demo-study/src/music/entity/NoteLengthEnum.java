@@ -6,6 +6,9 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static music.constant.Constants.LENGTH_MULTIPLE;
+import static music.constant.Constants.SPLIT_NUM;
+
 /**
  * {@link }TODO:需要删减，如果不为测试类则增加描述
  *
@@ -17,25 +20,27 @@ public enum NoteLengthEnum {
     /** 同时音 */
     ZERO(0, ""),
     /** 16分音符 */
-    SIXTEEN(1, "+"),
+    SIXTEEN(LENGTH_MULTIPLE, "+"),
     /** 8分音符 */
-    QUAVER(2, "~"),
+    QUAVER(2 * LENGTH_MULTIPLE, "~"),
     /** 8分·音符 */
-    QUAVER_POINT(3, "~*"),
+    QUAVER_POINT(3 * LENGTH_MULTIPLE, "~*"),
+    /** 4分音符，分割为三 */
+    CROTCHETS_SPLIT(4 * LENGTH_MULTIPLE / SPLIT_NUM, "-^"),
     /** 4分音符 */
-    CROTCHETS(4, "-"),
+    CROTCHETS(4 * LENGTH_MULTIPLE, "-"),
     /** 4分·音符 */
-    CROTCHETS_POINT(6, "-*"),
+    CROTCHETS_POINT(6 * LENGTH_MULTIPLE, "-*"),
     /** 2分音符 */
-    MINIMS(8, "="),
-    MINIMS_DOUBLE(8, "--"),
+    MINIMS(8 * LENGTH_MULTIPLE, "="),
+    MINIMS_DOUBLE(8 * LENGTH_MULTIPLE, "--"),
     /** 2分·音符 */
-    MINIMS_POINT(12, "=*"),
-    MINIMS_DOUBLE_POINT(12, "--*"),
+    MINIMS_POINT(12 * LENGTH_MULTIPLE, "=*"),
+    MINIMS_DOUBLE_POINT(12 * LENGTH_MULTIPLE, "--*"),
     /** 全音符 */
-    WHOLE(16, "&"),
-    WHOLE_DOUBLE(16, "=="),
-    WHOLE_FOUR(16, "----");
+    WHOLE(16 * LENGTH_MULTIPLE, "&"),
+    WHOLE_DOUBLE(16 * LENGTH_MULTIPLE, "=="),
+    WHOLE_FOUR(16 * LENGTH_MULTIPLE, "----");
 
     private final int value;
     private final String string;
@@ -61,10 +66,5 @@ public enum NoteLengthEnum {
 
     public String getString() {
         return string;
-    }
-
-    public static NoteLengthEnum point(NoteLengthEnum origin) {
-        String s = origin.getString() + "*";
-        return NAME_MAP.get(s);
     }
 }

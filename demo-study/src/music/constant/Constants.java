@@ -43,9 +43,11 @@ public class Constants {
     /** 按键总数 */
     public static final int PRESS_SIZE = 15;
     /** 一行的按键个数 */
-    public static final int pressXNum = 5;
+    public static final int PRESS_X_NUM = 5;
     /** 可用音阶数，只能使用7 或 12 */
     public static final char[] PRESS_CHARS = {'c', 'd', 'e', 'f', 'g', 'a', 'b'};
+    /** 时值的倍数 */
+    public static final int LENGTH_MULTIPLE = 3;
 
     /** 中央C位置 */
     public static final int BASE_PITCH = 4;
@@ -65,7 +67,11 @@ public class Constants {
     public static final char LOW_PITCH = ',';
     /** 附点符 */
     public static final char POINT_PITCH = '*';
-    /** 保留符号，实际上没有作用 */
+    /** 分割音符 */
+    public static final char SPLIT_PITCH = '^';
+    /** 分割音符的分割数 */
+    public static final int SPLIT_NUM = 3;
+    /** 保留符号，目前用于分割小节，实际上不作任何作用。 */
     public static final char END = '$';
 
     /** 简谱有效数字 */

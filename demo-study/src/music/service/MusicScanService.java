@@ -6,22 +6,22 @@ import music.entity.MusicScore;
 import music.entity.NoteEnum;
 import music.entity.NoteLengthEnum;
 import music.entity.Syllable;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
-import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static music.constant.Constants.BASE_PITCH;
 import static music.constant.Constants.PRESS_CHARS;
-import static music.constant.Constants.pressXNum;
+import static music.constant.Constants.PRESS_X_NUM;
 import static music.entity.NoteLengthEnum.WHOLE;
 
 /**
@@ -104,87 +104,69 @@ public class MusicScanService {
     }
 
     public void toSky(MusicScore musicScore, String path, String baseNote) {
-        if ( 3 == baseNote.length()) {
-            musicScore.setBaseNote(NoteEnum.from(baseNote.substring(0, 2)));
-            musicScore.setBasePitch(Integer.parseInt(baseNote.substring(2)));
-        } else {
-            musicScore.setBaseNote(NoteEnum.from(baseNote.substring(0, 1)));
-            musicScore.setBasePitch(Integer.parseInt(baseNote.substring(1)));
-        }
+        musicScore.setBaseNote(NoteEnum.from(baseNote.substring(0, baseNote.length() - 1)));
+        musicScore.setBasePitch(Integer.parseInt(baseNote.substring(baseNote.length() - 1)));
         // TODO(mingJie-Ou): 2021/2/8 给musicScore加上判定
         this.toSky(musicScore, path);
+    }
+
+    public void toSky(MusicScore musicScore, String path) {
+        LinkedList<String> tmpList = this.generateMusic(musicScore);
+        this.write(path, tmpList);
     }
 
     /**
      * 转为光遇谱子
      *
      * @param musicScore 转好的乐谱
-     * @param path 路径名
+     * @return linked list
      */
-    public void toSky(MusicScore musicScore, String path) {
-        File file = new File(path);
+    private LinkedList<String> generateMusic(MusicScore musicScore) {
+        LinkedList<String> tmpList = new LinkedList<>();
         final int baseValue = musicScore.getBaseValue();
+        // TODO(mingJie-Ou): 2021/2/15 时间变量 先去map找有没有，没有就生成，并放入map中
         final Map<Integer, String> pressMap = this.generateCallPress();
-        try (FileWriter writer = new FileWriter(file);
-             final BufferedWriter out = new BufferedWriter(writer)) {
-            // 写入头文件
-            out.write(Constants.HEAD_TEXT);
-            out.newLine();
-            // 写入按键函数
-            for (String pressString : this.generateFunctionPress()) {
-                out.write(pressString);
-                out.newLine();
+        // 写入头文件
+        tmpList.add(Constants.HEAD_TEXT);
+        tmpList.add(StringUtils.EMPTY);
+        // 写入按键函数
+        for (String pressString : this.generateFunctionPress()) {
+            tmpList.add(pressString);
+            tmpList.add(StringUtils.EMPTY);
+        }
+        tmpList.add(StringUtils.EMPTY);
+        // 遍历写入音符
+        int index = 0;
+        int rhythm = Constants.BASE_RHYTHM / musicScore.getSpeed();
+        for (Syllable syllable : musicScore.getSyllables()) {
+            final int interval = syllable.getIndex() - index;
+            if (0 != interval) {
+                tmpList.add(String.format(Constants.CALL_SLEEP_TEXT,
+                    rhythm * (interval) / NoteLengthEnum.CROTCHETS.getValue()));
             }
-            out.newLine();
-            // 遍历写入音符
-            int index = 0;
-            int rhythm = Constants.BASE_RHYTHM / musicScore.getSpeed();
-            for (Syllable syllable : musicScore.getSyllables()) {
-                final int interval = syllable.getIndex() - index;
-                if (0 != interval) {
-                    out.write(String.format(Constants.CALL_SLEEP_TEXT,
-                        rhythm * (interval) / NoteLengthEnum.CROTCHETS.getValue()));
-                }
-                out.write(pressMap.getOrDefault(syllable.computeNoteValue(baseValue), "Error;"));
-                if (0 != index && (index % WHOLE.getValue()) == 0 && (syllable.getIndex() % WHOLE.getValue()) != 0 ) {
+            tmpList.add(pressMap.getOrDefault(syllable.computeNoteValue(baseValue), "Error:无法识别（" + syllable + ")"));
+            if (0 != index && (index % WHOLE.getValue()) == 0 && (syllable.getIndex() % WHOLE.getValue()) != 0) {
+                tmpList.add(StringUtils.EMPTY);
+            }
+            index = syllable.getIndex();
+        }
+        return tmpList;
+    }
+
+    private void write(String path, LinkedList<String> strings) {
+        File file = new File(path);
+        try (final FileWriter writer = new FileWriter(file);
+             final BufferedWriter out = new BufferedWriter(writer)) {
+            for (String string : strings) {
+                if (StringUtils.isBlank(string)) {
                     out.newLine();
+                } else {
+                    out.write(string);
                 }
-                index = syllable.getIndex();
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    /**
-     * 将曲速转为Map
-     *
-     * @param speed 速度
-     * @return Integer - String map
-     */
-    private List<String> translateSpeed(int speed) {
-        int rhythm = Constants.BASE_RHYTHM / speed;
-        return Arrays.stream(NoteLengthEnum.values())
-            .map(NoteLengthEnum::getValue)
-            .map(i -> String.format(Constants.WAIT_TIME_TEXT, i, rhythm * i / WHOLE.getValue()))
-            .collect(Collectors.toList());
-    }
-
-    /**
-     * 调用等待函数
-     *
-     * @param num 等待变量的总个数
-     * @return Integer - String map
-     */
-    private Map<Integer, String> generateCallSleep(int num) {
-        return IntStream.range(-1, num)
-            .boxed()
-            .collect(Collectors.toMap(Function.identity(), i -> {
-                if (-1 == i) {
-                    return "";
-                }
-                return String.format(Constants.CALL_SLEEP_TEXT, i);
-            }));
     }
 
     /**
@@ -199,7 +181,7 @@ public class MusicScanService {
                     return "";
                 }
                 return String.format(Constants.PRESS_TEXT, PRESS_CHARS[i % PRESS_CHARS.length],
-                    BASE_PITCH + i / PRESS_CHARS.length, i % pressXNum, i / pressXNum);
+                    BASE_PITCH + i / PRESS_CHARS.length, i % PRESS_X_NUM, i / PRESS_X_NUM);
             })
             .collect(Collectors.toList());
     }
