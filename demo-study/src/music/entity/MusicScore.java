@@ -26,8 +26,10 @@ public class MusicScore {
     private int size;
     /** 曲速 */
     private int speed;
-    /** 节拍  */
+    /** 节拍 */
     private int rhythm;
+    /** 起始序号，用于多段拼接 */
+    private int beginIndex;
 
     private MusicScore() {
     }
@@ -74,7 +76,7 @@ public class MusicScore {
     /**
      * 将数据字符串转为谱子
      *
-     * @param data 数据字符串
+     * @param data      数据字符串
      * @param predicate 判定条件
      * @return 谱子
      */
@@ -92,7 +94,7 @@ public class MusicScore {
                     for (int j = i + 1; j < chars.length; j++) {
                         if (j == chars.length - 1 || predicate.test(chars[j])) {
                             Syllable syllable;
-                            if (j == chars.length -1){
+                            if (j == chars.length - 1) {
                                 syllable = Syllable.from(String.valueOf(chars, i, j - i + 1), index);
                             } else {
                                 syllable = Syllable.from(String.valueOf(chars, i, j - i), index);
@@ -143,5 +145,13 @@ public class MusicScore {
 
     public LinkedList<Syllable> getSyllables() {
         return syllables;
+    }
+
+    public int getBeginIndex() {
+        return beginIndex;
+    }
+
+    public void setBeginIndex(int beginIndex) {
+        this.beginIndex = beginIndex;
     }
 }

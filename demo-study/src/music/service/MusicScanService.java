@@ -9,7 +9,6 @@ import music.entity.Syllable;
 import music.service.impl.FileServiceImpl;
 import org.apache.commons.lang3.StringUtils;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -38,6 +37,7 @@ public class MusicScanService {
         12, 14, 16, 17, 19, 21, 23, 24};
     private final HashMap<Integer, String> timeMap = new HashMap<>(16);
     private final IFileService fileService = FileServiceImpl.of();
+    private boolean isTest;
 
     private MusicScanService() {
     }
@@ -54,7 +54,6 @@ public class MusicScanService {
      */
     public MusicScore scan(String path) {
         LinkedList<String> data = fileService.read(path);
-        File file = new File(path);
         boolean isStaff = false;
         int speed;
         int row;
@@ -101,6 +100,11 @@ public class MusicScanService {
         return musicScore;
     }
 
+    public MusicScore splice(MusicScore musicScore, String path) {
+        // TODO(mingJie-Ou): 2021/2/18 拼接伴奏功能
+        return null;
+    }
+
     public void toSky(MusicScore musicScore, String path, String baseNote) {
         musicScore.setBaseNote(NoteEnum.from(baseNote.substring(0, baseNote.length() - 1)));
         musicScore.setBasePitch(Integer.parseInt(baseNote.substring(baseNote.length() - 1)));
@@ -123,10 +127,10 @@ public class MusicScanService {
         LinkedList<String> tmpList = new LinkedList<>();
         final int baseValue = musicScore.getBaseValue();
         final Map<Integer, String> pressMap = this.generateCallPress();
-        // 写入头文件
-        tmpList.add(Constants.HEAD_TEST_TEXT);
+        // 编辑头文件
+        tmpList.add(isTest ? Constants.HEAD_TEST_TEXT : Constants.HEAD_TEXT);
         tmpList.add(StringUtils.EMPTY);
-        // 写入按键函数
+        // 编辑按键函数
         for (String pressString : this.generateFunctionPress()) {
             tmpList.add(pressString);
             tmpList.add(StringUtils.EMPTY);
@@ -136,6 +140,7 @@ public class MusicScanService {
         int index = 0;
         for (Syllable syllable : musicScore.getSyllables()) {
             final int interval = syllable.getIndex() - index;
+            // TODO(mingJie-Ou): 2021/2/18 修复最后一个音符没有调用等待函数的bug，如果不实现片段的前后拼接，可以不实现。
             this.getTime(interval, musicScore.getRhythm()).ifPresent(tmpList::add);
             tmpList.add(pressMap.getOrDefault(syllable.computeNoteValue(baseValue), "Error:无法识别（" + syllable + ")"));
             if (0 != index && (index % WHOLE.getValue()) == 0 && (syllable.getIndex() % WHOLE.getValue()) != 0) {
@@ -155,6 +160,7 @@ public class MusicScanService {
      * @return 等待函数的调用
      */
     private Optional<String> getTime(Integer key, int rhythm) {
+        // TODO(mingJie-Ou): 2021/2/18 调用中，使用变量代替常量。方便直接进行简单的曲速修改
         if (null == key || key < 0) {
             throw new BusinessException("key must no null");
         }
@@ -201,5 +207,9 @@ public class MusicScanService {
                 return String.format(Constants.CALL_PRESS_TEXT,
                     PRESS_CHARS[i % PRESS_CHARS.length], BASE_PITCH + i / PRESS_CHARS.length);
             }));
+    }
+
+    public void setTest(boolean test) {
+        isTest = test;
     }
 }

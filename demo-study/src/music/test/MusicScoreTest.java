@@ -19,7 +19,7 @@ public class MusicScoreTest {
     @Test
     public void test() {
         final MusicScanService musicScanService = MusicScanService.of();
-
+        musicScanService.setTest(true);
         MusicScore musicScore = musicScanService.scan(Constants.MAC_FILE_PATH);
         Assertions.assertNotNull(musicScore);
         musicScanService.toSky(musicScore, Constants.MAC_PATH_WRITE, "C4");
