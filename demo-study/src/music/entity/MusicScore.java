@@ -26,6 +26,8 @@ public class MusicScore {
     private int size;
     /** 曲速 */
     private int speed;
+    /** 节拍  */
+    private int rhythm;
 
     private MusicScore() {
     }
@@ -108,6 +110,10 @@ public class MusicScore {
         return musicScore;
     }
 
+    public int getRhythm() {
+        return rhythm;
+    }
+
     public int getBaseValue() {
         if (NoteEnum.ZERO == this.baseNote) {
             throw new BusinessException("基准音不能为0");
@@ -119,12 +125,12 @@ public class MusicScore {
         this.baseNote = note;
     }
 
-    public void setBasePitch(int pitch) {
-        this.basePitch = pitch;
+    public void setRhythm(int rhythm) {
+        this.rhythm = rhythm;
     }
 
-    public int getSpeed() {
-        return speed;
+    public void setBasePitch(int pitch) {
+        this.basePitch = pitch;
     }
 
     public void setSpeed(int speed) {

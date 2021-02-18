@@ -20,8 +20,9 @@ public class MusicScoreTest {
     public void test() {
         final MusicScanService musicScanService = MusicScanService.of();
 
-        MusicScore musicScore = musicScanService.scan(Constants.FILE_PATH);
-        musicScanService.toSky(musicScore, Constants.FILE_PATH_WRITE, "D4");
+        MusicScore musicScore = musicScanService.scan(Constants.MAC_FILE_PATH);
+        Assertions.assertNotNull(musicScore);
+        musicScanService.toSky(musicScore, Constants.MAC_PATH_WRITE, "C4");
     }
 
     @Test

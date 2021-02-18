@@ -15,9 +15,13 @@ public class Constants {
     }
 
     /** 文件写入路径名 */
-    public static final String FILE_PATH = "D:/sky/test.txt";
+    public static final String WINDOW_FILE_PATH = "D:/sky/test.txt";
     /** 文件输出路径名 */
-    public static final String FILE_PATH_WRITE = "D:/sky/test_out.js";
+    public static final String WINDOW_PATH_WRITE = "D:/sky/test_out.js";
+    /** 文件写入路径名 */
+    public static final String MAC_FILE_PATH = "/Users/kaqiuzi/Desktop/MyWork/sky/test.txt";
+    /** 文件输出路径名 */
+    public static final String MAC_PATH_WRITE = "/Users/kaqiuzi/Desktop/MyWork/sky/test.js";
     /** JavaScript */
     public static final String JAVA_SCRIPT = "JavaScript";
     /** staff */
@@ -32,6 +36,8 @@ public class Constants {
     public static final int MAX_ROWS = 99;
     /** 文件头部 */
     public static final String HEAD_TEXT = "var x=2340;var x0=760;var x1=960.0;var x2=1160.0;var x3=1360.0;var x4=1560;var y=1080;var y0=200;var y1=400.0;var y2=600;";
+    /** 文件头部test */
+    public static final String HEAD_TEST_TEXT = "var x=2340;var x0=700;var x1=950.0;var x2=1200.0;var x3=1450.0;var x4=1700;var y=1080;var y0=300;var y1=550.0;var y2=800;";
     /** 时间js文本 */
     public static final String WAIT_TIME_TEXT = "var time%d = %d;";
     /** 各按键js文本 */
