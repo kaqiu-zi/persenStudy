@@ -5,11 +5,12 @@ import music.common.BusinessException;
 import music.constant.Constants;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.function.Predicate;
 
 /**
- * 乐谱类，使用linkedList存储音符
+ * 乐谱类，使用ArrayList存储音符
  *
  * @author mingJie-Ou
  * @version 1.0 2021/2/3
@@ -17,7 +18,7 @@ import java.util.function.Predicate;
  */
 public class MusicScore {
     /** 存储音符的list */
-    private final LinkedList<Syllable> syllables = new LinkedList<>();
+    private final ArrayList<Syllable> syllables = new ArrayList<>();
     /** 基准音，默认 */
     private NoteEnum baseNote = NoteEnum.C;
     /** 基准音高，默认 */
@@ -28,10 +29,28 @@ public class MusicScore {
     private int speed;
     /** 节拍 */
     private int rhythm;
-    /** 起始序号，用于多段拼接 */
-    private int beginIndex;
+    /** 末尾序号，包含时长 */
+    private int endIndex;
 
     private MusicScore() {
+    }
+
+    /**
+     * 拼接两个乐谱，融合拼接
+     * <p>两个乐谱节拍或者曲速必须一致</p></>
+     *
+     * @param musicScoreOne 第一个
+     * @param musicScoreTwo 第二个
+     * @return 融合后的乐谱
+     */
+    public static MusicScore fuse(MusicScore musicScoreOne, MusicScore musicScoreTwo) {
+        MusicScore musicScore = new MusicScore();
+        musicScore.setRhythm(musicScoreOne.getRhythm());
+        musicScore.size = musicScoreOne.getSize() + musicScoreTwo.getSize();
+        musicScore.syllables.addAll(musicScoreOne.getSyllables());
+        musicScore.syllables.addAll(musicScoreTwo.getSyllables());
+        Collections.sort(musicScore.syllables);
+        return musicScore;
     }
 
     /**
@@ -39,7 +58,7 @@ public class MusicScore {
      *     有效字符：
      *     0 ~ 7 ： 简谱音符
      *     '' ,, ： 简谱音高、音低符
-     *     &-~=#^： 全音符、二分音符...三十二分音符，能使用一个符号，就不要使用两个符号，减少重复。
+     *     &=-~+： 全音符、二分音符...十六分音符，能使用一个符号，就不要使用两个符号，减少重复。
      *     $     ： 保留符号，暂不会起任何作用
      * </pre>
      * <p>例子： 5~=5=2'~=2'=3'~=3'=1'~=1'=</p>
@@ -59,7 +78,7 @@ public class MusicScore {
      *     A ~ H ： 五线谱音符
      *     # b   ： 五线谱半音
      *     1 ~ 7 ： 五线谱
-     *     &-~=#^： 全音符、二分音符...三十二分音符，能使用一个符号，就不要使用两个符号，减少重复。
+     *     &=-~+： 全音符、二分音符...十六分音符，能使用一个符号，就不要使用两个符号，减少重复。
      *     $     ： 保留符号，暂不会起任何作用
      * </pre>
      * <p>例子： 5~=5=2'~=2'=3'~=3'=1'~=1'=</p>
@@ -109,6 +128,7 @@ public class MusicScore {
                 }
             }
         }
+        musicScore.setEndIndex(index);
         return musicScore;
     }
 
@@ -143,15 +163,15 @@ public class MusicScore {
         return size;
     }
 
-    public LinkedList<Syllable> getSyllables() {
+    public ArrayList<Syllable> getSyllables() {
         return syllables;
     }
 
-    public int getBeginIndex() {
-        return beginIndex;
+    public int getEndIndex() {
+        return endIndex;
     }
 
-    public void setBeginIndex(int beginIndex) {
-        this.beginIndex = beginIndex;
+    public void setEndIndex(int endIndex) {
+        this.endIndex = endIndex;
     }
 }

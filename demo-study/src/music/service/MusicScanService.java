@@ -100,9 +100,19 @@ public class MusicScanService {
         return musicScore;
     }
 
-    public MusicScore splice(MusicScore musicScore, String path) {
-        // TODO(mingJie-Ou): 2021/2/18 拼接伴奏功能
-        return null;
+    /**
+     * 拼接两个乐谱，融合拼接
+     * <p>两个乐谱节拍或者曲速必须一致</p></>
+     *
+     * @param musicScoreOne 第一个
+     * @param musicScoreTwo 第二个
+     * @return 融合后的乐谱
+     */
+    public MusicScore splice(MusicScore musicScoreOne, MusicScore musicScoreTwo) {
+        if (musicScoreOne.getRhythm() != musicScoreTwo.getRhythm()) {
+            throw new BusinessException("无法拼接两个曲速不一致的谱子");
+        }
+        return MusicScore.fuse(musicScoreOne, musicScoreTwo);
     }
 
     public void toSky(MusicScore musicScore, String path, String baseNote) {
@@ -140,7 +150,6 @@ public class MusicScanService {
         int index = 0;
         for (Syllable syllable : musicScore.getSyllables()) {
             final int interval = syllable.getIndex() - index;
-            // TODO(mingJie-Ou): 2021/2/18 修复最后一个音符没有调用等待函数的bug，如果不实现片段的前后拼接，可以不实现。
             this.getTime(interval, musicScore.getRhythm()).ifPresent(tmpList::add);
             tmpList.add(pressMap.getOrDefault(syllable.computeNoteValue(baseValue), "Error:无法识别（" + syllable + ")"));
             if (0 != index && (index % WHOLE.getValue()) == 0 && (syllable.getIndex() % WHOLE.getValue()) != 0) {
@@ -148,6 +157,7 @@ public class MusicScanService {
             }
             index = syllable.getIndex();
         }
+        this.getTime(musicScore.getEndIndex() - index, musicScore.getRhythm()).ifPresent(tmpList::add);
         return tmpList;
     }
 
