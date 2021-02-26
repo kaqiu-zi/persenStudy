@@ -6,11 +6,11 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
- * {@link }TODO:需要删减，如果不为测试类则增加描述
+ * 音符枚举类
  *
  * @author mingJie-Ou
  * @version 1.0 2021/2/2
- * @since 1.0.0 TODO:需要跟随版本号
+ * @since 1.0.0
  */
 public enum NoteEnum {
     /** 音符对应数字 */

@@ -1,11 +1,11 @@
 package music.common;
 
 /**
- * {@link }TODO:需要删减，如果不为测试类则增加描述
+ * 异常类
  *
  * @author mingJie-Ou
  * @version 1.0 2021/2/5
- * @since 1.0.0 TODO:需要跟随版本号
+ * @since 1.0.0
  */
 public class BusinessException extends RuntimeException {
 

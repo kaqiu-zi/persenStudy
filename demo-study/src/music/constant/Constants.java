@@ -4,11 +4,11 @@ import java.util.Arrays;
 import java.util.HashSet;
 
 /**
- * {@link }TODO:需要删减，如果不为测试类则增加描述
+ * 常量类
  *
  * @author mingJie-Ou
  * @version 1.0 2021/2/5
- * @since 1.0.0 TODO:需要跟随版本号
+ * @since 1.0.0
  */
 public class Constants {
     private Constants() {

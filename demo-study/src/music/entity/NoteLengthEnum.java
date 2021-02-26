@@ -10,11 +10,11 @@ import static music.constant.Constants.LENGTH_MULTIPLE;
 import static music.constant.Constants.SPLIT_NUM;
 
 /**
- * {@link }TODO:需要删减，如果不为测试类则增加描述
+ * 符值枚举类
  *
  * @author mingJie-Ou
  * @version 1.0 2021/2/2
- * @since 1.0.0 TODO:需要跟随版本号
+ * @since 1.0.0
  */
 public enum NoteLengthEnum {
     /** 同时音 */
