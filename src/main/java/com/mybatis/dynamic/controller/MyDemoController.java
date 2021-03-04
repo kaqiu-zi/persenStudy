@@ -1,7 +1,7 @@
 package com.mybatis.dynamic.controller;
 
 import com.mybatis.dynamic.entity.Task;
-import com.mybatis.dynamic.vo.ApiResult;
+import com.network.common.ApiResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;

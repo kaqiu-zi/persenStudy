@@ -1,4 +1,4 @@
-package com.mybatis.dynamic.vo;
+package com.network.common;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -29,4 +29,10 @@ public class ApiResult<T> {
     public static <T> ApiResult<T> success(T data) {
         return new ApiResult<>(true, 0, data, "error_code.ok");
     }
+
+    public static <T> ApiResult<T> success() {
+        return new ApiResult<>(true, 0, null, "error_code.ok");
+    }
+
+    
 }
