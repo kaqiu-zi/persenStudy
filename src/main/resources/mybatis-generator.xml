@@ -1,59 +1,76 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE generatorConfiguration PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+<!DOCTYPE generatorConfiguration
+        PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
         "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+
 <generatorConfiguration>
-    <!--mybatis targetRuntime选择 该测试需要MyBatis3DynamicSQL-->
-    <context id="MySql" targetRuntime="MyBatis3DynamicSQL">
-        <!--插件-->
+
+    <!--classPathEntry:数据库的JDBC驱动,换成你自己的驱动位置 可选 -->
+    <classPathEntry location="${user.home}/.m2/repository/mysql/mysql-connector-java/8.0.21/mysql-connector-java-8.0.21.jar"/>
+
+    <context id="backendTables" defaultModelType="conditional" targetRuntime="MyBatis3DynamicSql">
+        <!-- 数据库关键字冲突,自动处理 -->
+        <property name="autoDelimitKeywords" value="true"/>
+        <!-- 用反引号`包裹,默认是双引号" -->
+        <property name="beginningDelimiter" value="`"/>
+        <property name="endingDelimiter" value="`"/>
         <plugin type="org.mybatis.generator.plugins.SerializablePlugin" />
         <plugin type="org.mybatis.generator.plugins.EqualsHashCodePlugin" />
         <plugin type="org.mybatis.generator.plugins.ToStringPlugin" />
         <plugin type="org.mybatis.generator.plugins.FluentBuilderMethodsPlugin" />
 
         <commentGenerator>
-            <!-- 是否去除所有自动生成的注释 true：是 ： false:否 -->
-            <property name="suppressAllComments" value="true"/>
-            <!-- 是否去除自动生成日期的注释 true：是 ： false:否 -->
-            <property name="suppressDate" value="false"/>
+            <!-- 添加数据库注释到生成的代码 -->
+            <property name="addRemarkComments" value="true" />
+            <!-- 不生成日期 -->
+            <property name="suppressDate" value="true"/>
         </commentGenerator>
 
-        <!--数据库连接-->
         <jdbcConnection driverClass="com.mysql.cj.jdbc.Driver"
-                        connectionURL="jdbc:mysql://localhost:3306/SimpleTable?serverTimezone=UTC&amp;useUnicode=true&amp;characterEncoding=utf8"
-                        userId="root" password="adminA123!"/>
+                        connectionURL="jdbc:mysql://localhost:3306/facemagic_backend"
+                        userId="rdadm"
+                        password="Xgd@2016">
+            <property name="useSSL" value="false" />
+            <property name="serverTimezone" value="Asia/Hong_Kong" />
+            <!--MySQL 不支持 schema 或者 catalog 所以需要添加这个，作用就是只生成指定数据库的 -->
+            <!--参考 : http://www.mybatis.org/generator/usage/mysql.html -->
+            <property name="nullCatalogMeansCurrent" value="true" />
+        </jdbcConnection>
 
-        <!--类型解析器-->
-       <!-- <javaTypeResolver type="org.mybatis.generator.internal.types.JavaTypeResolverDefaultImpl">-->
-        <javaTypeResolver>
-            <!--是否对整型进行分类-->
-            <property name="forceBigDecimals" value="true"/>
-            <!--是否试用jdk8时间类-->
-            <property name="useJSR310Types" value="true"/>
+        <javaTypeResolver >
+            <property name="forceBigDecimals" value="true" />
+            <!-- time field use LocalDate etc -->
+            <property name="useJSR310Types" value="true" />
         </javaTypeResolver>
 
-        <!--java实体类生成配置-->
-        <javaModelGenerator targetPackage="com.mybatis.dynamic.entity" targetProject="src/main/java">
-            <!-- 是否允许子包，即targetPackage.schemaName.tableName -->
-            <property name="enableSubPackages" value="true"/>
-            <!-- 是否对model添加 构造函数 -->
-            <property name="constructorBased" value="false"/>
-            <!-- 是否对类CHAR类型的列的数据进行trim操作 -->
-            <property name="trimStrings" value="true"/>
-            <!-- 建立的Model对象是否 不可改变  即生成的Model对象不会有 setter方法，只有构造方法 -->
-            <property name="immutable" value="false"/>
+        <javaModelGenerator targetPackage="com.xinguodu.facemagic.model.entity" targetProject="src/main/java">
+            <property name="enableSubPackages" value="true" />
+            <property name="trimStrings" value="true" />
         </javaModelGenerator>
 
-        <!--mapper生成配置-->
-        <javaClientGenerator type="ANNOTATEDMAPPER" targetPackage="com.mybatis.dynamic.mapper" targetProject="src/main/java">
-            <!--此属性用于选择MyBatis Generator是否将根据内省表的目录和架构为对象生成不同的Java包。-->
-            <property name="enableSubPackages" value="true"/>
+        <!-- 需要生成XML时才有效 -->
+        <sqlMapGenerator targetPackage="mapper" targetProject="src/main/resources">
+            <property name="enableSubPackages" value="true" />
+        </sqlMapGenerator>
+
+        <javaClientGenerator type="ANNOTATEDMAPPER" targetPackage="com.xinguodu.facemagic.model.dao" targetProject="src/main/java">
+            <property name="enableSubPackages" value="true" />
         </javaClientGenerator>
 
-        <!--数据表的选择-->
-        <table tableName="Human"  enableCountByExample="false" enableUpdateByExample="false"
-               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
-            <property name="constructorBased" value="false"/>
-            <generatedKey column="id" sqlStatement="Mysql" identity="true"/>
+        <table schema="facemagic_backend" tableName="material" >
+            <property name="useActualColumnNames" value="false"/>
+            <generatedKey column="ID" sqlStatement="MySql" identity="true" />
         </table>
+        <!--
+        <table schema="facemagic_backend" tableName="deleted_material" >
+            <property name="useActualColumnNames" value="false"/>
+            <generatedKey column="ID" sqlStatement="MySql" identity="true" />
+        </table>
+        <table schema="facemagic_backend" tableName="uploaded_file" >
+            <property name="useActualColumnNames" value="false"/>
+            <generatedKey column="ID" sqlStatement="MySql" identity="true" />
+        </table>
+        -->
     </context>
+
 </generatorConfiguration>
