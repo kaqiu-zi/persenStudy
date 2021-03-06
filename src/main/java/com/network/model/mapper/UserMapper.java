@@ -1,6 +1,6 @@
-package com.network.model.dao;
+package com.network.model.mapper;
 
-import static com.network.model.dao.UserDynamicSqlSupport.*;
+import static com.network.model.mapper.UserDynamicSqlSupport.*;
 import static org.mybatis.dynamic.sql.SqlBuilder.*;
 
 import com.network.model.entity.User;

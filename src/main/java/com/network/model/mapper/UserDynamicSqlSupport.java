@@ -1,4 +1,4 @@
-package com.network.model.dao;
+package com.network.model.mapper;
 
 import java.sql.JDBCType;
 import java.time.LocalDateTime;
