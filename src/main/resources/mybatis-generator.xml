@@ -6,7 +6,7 @@
 <generatorConfiguration>
 
     <!--classPathEntry:数据库的JDBC驱动,换成你自己的驱动位置 可选 -->
-    <classPathEntry location="${user.home}/.m2/repository/mysql/mysql-connector-java/8.0.21/mysql-connector-java-8.0.21.jar"/>
+    <!--<classPathEntry location="${user.home}/.m2/repository/mysql/mysql-connector-java/8.0.21/mysql-connector-java-8.0.21.jar"/>-->
 
     <context id="backendTables" defaultModelType="conditional" targetRuntime="MyBatis3DynamicSql">
         <!-- 数据库关键字冲突,自动处理 -->
@@ -27,9 +27,9 @@
         </commentGenerator>
 
         <jdbcConnection driverClass="com.mysql.cj.jdbc.Driver"
-                        connectionURL="jdbc:mysql://localhost:3306/facemagic_backend"
-                        userId="rdadm"
-                        password="Xgd@2016">
+                        connectionURL="jdbc:mysql://localhost:3306/network"
+                        userId="root"
+                        password="123">
             <property name="useSSL" value="false" />
             <property name="serverTimezone" value="Asia/Hong_Kong" />
             <!--MySQL 不支持 schema 或者 catalog 所以需要添加这个，作用就是只生成指定数据库的 -->
@@ -43,7 +43,7 @@
             <property name="useJSR310Types" value="true" />
         </javaTypeResolver>
 
-        <javaModelGenerator targetPackage="com.xinguodu.facemagic.model.entity" targetProject="src/main/java">
+        <javaModelGenerator targetPackage="com.network.model.entity" targetProject="src/main/java">
             <property name="enableSubPackages" value="true" />
             <property name="trimStrings" value="true" />
         </javaModelGenerator>
@@ -53,24 +53,27 @@
             <property name="enableSubPackages" value="true" />
         </sqlMapGenerator>
 
-        <javaClientGenerator type="ANNOTATEDMAPPER" targetPackage="com.xinguodu.facemagic.model.dao" targetProject="src/main/java">
+        <javaClientGenerator type="ANNOTATEDMAPPER" targetPackage="com.network.model.dao" targetProject="src/main/java">
             <property name="enableSubPackages" value="true" />
         </javaClientGenerator>
 
-        <table schema="facemagic_backend" tableName="material" >
+<!--        <table schema="facemagic_backend" tableName="material" >
+            <property name="useActualColumnNames" value="false"/>
+            <generatedKey column="ID" sqlStatement="MySql" identity="true" />
+        </table>-->
+
+        <table schema="network" tableName="user" >
             <property name="useActualColumnNames" value="false"/>
             <generatedKey column="ID" sqlStatement="MySql" identity="true" />
         </table>
-        <!--
-        <table schema="facemagic_backend" tableName="deleted_material" >
+        <table schema="network" tableName="file" >
             <property name="useActualColumnNames" value="false"/>
             <generatedKey column="ID" sqlStatement="MySql" identity="true" />
         </table>
-        <table schema="facemagic_backend" tableName="uploaded_file" >
+        <table schema="network" tableName="folder" >
             <property name="useActualColumnNames" value="false"/>
             <generatedKey column="ID" sqlStatement="MySql" identity="true" />
         </table>
-        -->
     </context>
 
 </generatorConfiguration>
