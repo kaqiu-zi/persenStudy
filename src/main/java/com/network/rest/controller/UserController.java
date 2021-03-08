@@ -12,6 +12,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -43,6 +44,7 @@ import java.util.concurrent.Executor;
 @RequiredArgsConstructor
 public class UserController {
     private Executor executorService;
+
     private final MessageSource messageSource;
     private final IUserBizService userBizService;
 

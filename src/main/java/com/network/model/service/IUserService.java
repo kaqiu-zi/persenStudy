@@ -1,5 +1,7 @@
 package com.network.model.service;
 
+import com.network.model.dto.UserDTO;
+
 /**
  * {@link } 通用service
  *
@@ -10,17 +12,31 @@ package com.network.model.service;
 public interface IUserService {
 
     /**
-     * 用户注册
+     * 添加一个新用户
      */
-    void add();
+    void add(UserDTO userDto);
 
     /**
-     * 用户注册
+     * 判断email 是否存在重复
+     *
+     * @param email 邮箱
+     * @return 存在 -> true， 不存在 -> false
      */
-    void query();
+    boolean existEmail(String email);
 
     /**
-     * 用户注册
+     * 判断username 是否存在重复
+     *
+     * @param username 用户名
+     * @return 存在 -> true， 不存在 -> false
      */
-    void update();
+    boolean existUsername(String username);
+
+    /**
+     * 判断nickname 是否存在重复
+     *
+     * @param nickname 昵称
+     * @return 存在 -> true， 不存在 -> false
+     */
+    boolean existNickname(String nickname);
 }

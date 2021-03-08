@@ -7,8 +7,10 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 /**
  * {@link } 通用请求
@@ -23,12 +25,12 @@ import javax.validation.constraints.NotNull;
 @Data
 @Builder
 public class UserEmailLoginRequest {
-    /** id */
-    @ApiModelProperty(value = "id", required = true, example = "1")
-    @NotNull
-    private Integer id;
-    /** 数据项 */
-    @ApiModelProperty(value = "数据", required = true, example = "data")
+    /** 邮箱 */
+    @ApiModelProperty(value = "邮箱", required = true, example = "123@net.com")
+    @Email
+    private String email;
+    /** 密码 */
+    @ApiModelProperty(value = "密码", required = true, example = "1")
     @NotBlank
-    private String data;
+    private String password;
 }

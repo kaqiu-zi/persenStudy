@@ -1,8 +1,11 @@
 package com.network.rest.biz;
 
+import com.network.common.CommonVO;
+import com.network.common.ErrorCodeEnum;
 import com.network.rest.vo.UserEmailLoginRequest;
 import com.network.rest.vo.UserRegisterRequest;
 import com.network.rest.vo.UserResetRequest;
+import org.apache.commons.lang3.tuple.Pair;
 
 /**
  * 用户服务接口
@@ -17,24 +20,24 @@ public interface IUserBizService {
      *
      * @param request 请求
      */
-    void register(UserRegisterRequest request);
+    Pair<CommonVO, ErrorCodeEnum> register(UserRegisterRequest request);
 
     /**
      * 邮箱登陆
      *
      * @param request 请求
      */
-    void emailLogin(UserEmailLoginRequest request);
+    Pair<CommonVO, ErrorCodeEnum> emailLogin(UserEmailLoginRequest request);
 
     /**
      * 密码重置
      *
      * @param request 请求
      */
-    void emailLogin(UserResetRequest request);
+    Pair<CommonVO, ErrorCodeEnum> reset(UserResetRequest request);
 
     /**
      * 获取公钥
      */
-    void getPublicKey();
+    Pair<CommonVO, ErrorCodeEnum> getPublicKey();
 }
